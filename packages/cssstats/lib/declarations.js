@@ -23,6 +23,15 @@ module.exports = function(root, opts) {
   root.walkRules(function(rule) {
     rule.walkDecls(function(declaration) {
       var prop = declaration.prop
+      const getFullSelector = (declaration) => {
+        const selectors = [];
+        let decl = declaration;
+        while(decl.parent) {
+          selectors.unshift(decl.parent.selector);
+          decl = decl.parent;
+        }
+        return selectors.join(' ');
+      }
 
       result.total++
 
@@ -34,7 +43,10 @@ module.exports = function(root, opts) {
       }
 
       result.properties[prop] = result.properties[prop] || []
-      result.properties[prop].push(declaration.value)
+      result.properties[prop].push({
+        selector: getFullSelector(declaration),
+        value: declaration.value
+      })
     })
   })
 
